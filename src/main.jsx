@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import './index.css'
+import SetAvatar from "./pages/SetAvatar";
 
 const router = createBrowserRouter([
 	{
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
 		path: "/chat",
 		element: <Chat />,
 	},
+	{
+		path: "/setAvatar",
+		element: <SetAvatar/>,
+	}
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

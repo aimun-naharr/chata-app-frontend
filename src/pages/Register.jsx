@@ -18,7 +18,7 @@ const Register = () => {
 		setValues({ ...values, [e.target.name]: e.target.value });
 	};
     useEffect(()=>{
-        if(localStorage.getItem('chat-app-token')){
+        if(localStorage.getItem('chat-app-user')){
             navigate('/chat')
         }
     }, [])
@@ -30,9 +30,9 @@ const Register = () => {
         axios.post(registerUrl, { userName, password, email })
         .then(response => {
            if(response.data){
-            localStorage.setItem('chat-app-user', JSON.stringify(response.data.user))
-            localStorage.setItem('chat-app-token', JSON.stringify(response.data.token))
-            navigate('/chat')
+            localStorage.setItem('chat-app-user', JSON.stringify(response.data))
+           
+            navigate('/setAvatar')
            }
             setLoading(false);
           })

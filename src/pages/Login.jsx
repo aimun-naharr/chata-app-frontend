@@ -17,7 +17,7 @@ const Login = () => {
 		setValues({ ...values, [e.target.name]: e.target.value });
 	};
 useEffect(()=>{
-    if(localStorage.getItem('chat-app-token')){
+    if(localStorage.getItem('chat-app-user')){
         navigate('/chat')
     }
 }, [])
@@ -29,8 +29,8 @@ useEffect(()=>{
         axios.post(loginUrl, { userName, password })
         .then(response => {
            if(response.data){
-            localStorage.setItem('chat-app-user', JSON.stringify(response.data.user))
-            localStorage.setItem('chat-app-token', JSON.stringify(response.data.token))
+            localStorage.setItem('chat-app-user', JSON.stringify(response.data))
+           
             navigate('/chat')
            }
             setLoading(false);
