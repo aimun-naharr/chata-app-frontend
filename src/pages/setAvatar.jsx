@@ -34,9 +34,11 @@ const SetAvatar = () => {
 
 	const setProfilePicture = async () => {
 		const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+		setIsLoading(true)
 		const { data } = await axios.patch(`${setAvatarUrl}/${user.user._id}`, {
 			image: avatars[selectedAvatar],
 		});
+		setIsLoading(false)
 		console.log(data);
 		if (data.isSet) {
 			user.user.isAvatarImageSet = true;
