@@ -3,15 +3,30 @@ import styled from "styled-components";
 import { BsFillEmojiLaughingFill, BsFillSendFill } from "react-icons/bs";
 import { IconContext } from "react-icons";
 import EmojiPicker from "emoji-picker-react";
+import axios from "axios";
+import { sendMessage } from "../utils/ApiRoutes";
 
-const ChatContainer = ({ currentChat }) => {
+const ChatContainer = ({ currentChat, currentUser }) => {
 	const [msg, setMsg] = useState("");
+	const [loading, setLoading]=useState(false)
 	console.log(msg);
 	const [emojiPicker, setEmojiPicker] = useState(false);
 	const handleEmojiPicker = (event, emoji) => {
 		let message = msg;
 		message += event.emoji;
 		setMsg(message);
+	};
+	const handleSendMsg = async() => {
+		if (!msg) return;
+		setLoading(true)
+		const data=await axios.post(sendMessage, {
+			from: currentUser.user._id,
+			to : currentChat._id,
+			message: msg
+		})
+		setLoading(false)
+		console.log(data)
+		setMsg('')
 	};
 	return (
 		<Container>
@@ -36,12 +51,13 @@ const ChatContainer = ({ currentChat }) => {
 					</IconContext.Provider>
 					<input type="text" value={msg} placeholder="Write a message..." onChange={(e) => setMsg(e.target.value)} />
 				</div>
-				<button>
-					<IconContext.Provider value={{ color: "#146b97", className: "icon-button", size: 30 }}>
+				<button onClick={handleSendMsg}>
+					{/* <IconContext.Provider value={{ color: "#146b97", className: "icon-button", size: 30 }}>
 						<div>
 							<BsFillSendFill />
 						</div>
-					</IconContext.Provider>
+					</IconContext.Provider> */}
+					{loading? 'Sending...' : 'Send'}
 				</button>
 			</div>
 		</Container>
