@@ -42,7 +42,7 @@ const Chat = () => {
 				</div>
 				<div className="chat">
 					{
-						currentChat ? <ChatContainer/>: <Welcome/>
+						currentChat ? <ChatContainer currentChat={currentChat}/>: <Welcome currentUser={user}/>
 					}
 				</div>
 			</div>
