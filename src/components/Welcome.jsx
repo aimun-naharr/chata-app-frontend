@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Welcome = ({currentUser}) => {
-    console.log(currentUser)
     return (
         <div>
             <h4>Hello {currentUser?.user.userName}</h4>

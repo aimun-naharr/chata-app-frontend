@@ -6,6 +6,7 @@ import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
 import { getAllUsersUrl } from "../utils/ApiRoutes";
+import io from "socket.io-client";
 
 const Chat = () => {
 	const navigate = useNavigate();
@@ -13,7 +14,8 @@ const Chat = () => {
 	const [contacts, setContacts] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
 	const [currentChat, setCurrentChat] = useState(null);
-	console.log(currentChat);
+	const socket = io("http://localhost:8000");
+	console.log(socket)
 	useEffect(() => {
 		if (!localStorage.getItem("chat-app-user")) {
 			navigate("/login");
@@ -21,6 +23,11 @@ const Chat = () => {
 			setCurrentUser(JSON.parse(localStorage.getItem("chat-app-user")));
 		}
 	}, []);
+	useEffect(()=>{
+if(user){
+	socket.emit('add-user', user.user._id)
+}
+	}, [user])
 	useEffect(() => {
 		const fetchAllUsers = async () => {
 			if (currentUser && currentUser?.user?.isAvatarImageSet) {
@@ -42,7 +49,7 @@ const Chat = () => {
 				</div>
 				<div className="chat">
 					{
-						currentChat ? <ChatContainer currentChat={currentChat} currentUser={user} />: <Welcome currentUser={user}/>
+						currentChat ? <ChatContainer currentChat={currentChat} currentUser={user} socket={socket}/>: <Welcome currentUser={user}/>
 					}
 				</div>
 			</div>

@@ -1,42 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BsFillEmojiLaughingFill, BsFillSendFill } from "react-icons/bs";
 import { IconContext } from "react-icons";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
-import { sendMessage } from "../utils/ApiRoutes";
+import { getAllMessage, sendMessage } from "../utils/ApiRoutes";
 
-const ChatContainer = ({ currentChat, currentUser }) => {
+const ChatContainer = ({ currentChat, currentUser, socket }) => {
 	const [msg, setMsg] = useState("");
-	const [loading, setLoading]=useState(false)
-	console.log(msg);
+	const [loading, setLoading] = useState(false);
+	const [chatMessages, setChatMessages] = useState([]);
 	const [emojiPicker, setEmojiPicker] = useState(false);
+	const [receivedMsg, setReceivedMsg] = useState({});
+
+	useEffect(() => {
+		const getAllChatMsgs = async () => {
+			console.log(currentUser.user._id, currentChat._id);
+			const data = await axios.post(getAllMessage, {
+				from: currentUser.user._id,
+				to: currentChat._id,
+			});
+			console.log(data.data);
+			setChatMessages(data?.data);
+		};
+		getAllChatMsgs();
+	}, [currentChat]);
 	const handleEmojiPicker = (event, emoji) => {
 		let message = msg;
 		message += event.emoji;
 		setMsg(message);
 	};
-	const handleSendMsg = async() => {
+	const handleSendMsg = async () => {
 		if (!msg) return;
-		setLoading(true)
-		const data=await axios.post(sendMessage, {
+		setLoading(true);
+		const data = await axios.post(sendMessage, {
 			from: currentUser.user._id,
-			to : currentChat._id,
-			message: msg
-		})
-		setLoading(false)
-		console.log(data)
-		setMsg('')
+			to: currentChat._id,
+			message: msg,
+		});
+		socket.emit("send-msg", {
+			from: currentUser.user._id,
+			to: currentChat._id,
+			message: msg,
+		});
+		const msgs = [...chatMessages];
+		msgs.push({ fromSelf: true, message: msg });
+		setChatMessages(msgs);
+		setLoading(false);
+		setMsg("");
+		setEmojiPicker(false);
 	};
+
+	useEffect(() => {
+		if (socket) {
+			socket.on("rcv-msg", (msg) => {
+				setReceivedMsg({ fromSelf: msg, message: msg });
+			});
+		}
+	});
+	useEffect(() => {
+		receivedMsg && setChatMessages((prev) => [...prev, receivedMsg]);
+	}, [receivedMsg]);
 	return (
 		<Container>
+			{/* chat header */}
 			<div className="chat-header">
 				<div className="avatar">
 					<img src={`data:image/svg+xml;base64,${currentChat?.avatar}`} alt="avatar" />
 				</div>
 				<h5>{currentChat.userName}</h5>
 			</div>
-			<div className="chat-messages"></div>
+			{/* chat messages to display */}
+			<div className="chat-messages">
+				{chatMessages.map((message) => (
+					<div className={` message ${message.fromSelf ? "send-message" : "receive-message"}`}>{message.message}</div>
+				))}
+			</div>
+			{/* chat messages to send */}
 			<div className="chat-input">
 				<div className="chat-input-left-section">
 					{emojiPicker && (
@@ -57,7 +97,7 @@ const ChatContainer = ({ currentChat, currentUser }) => {
 							<BsFillSendFill />
 						</div>
 					</IconContext.Provider> */}
-					{loading? 'Sending...' : 'Send'}
+					{loading ? "Sending..." : "Send"}
 				</button>
 			</div>
 		</Container>
@@ -75,8 +115,9 @@ const Container = styled.div`
 		display: flex;
 		align-items: center;
 		padding: 10px;
-		background: #146b97;
+		background: #006aff;
 		color: #ffffff;
+		margin-bottom: 20px;
 		h5 {
 			margin-left: 10px;
 		}
@@ -88,11 +129,35 @@ const Container = styled.div`
 	}
 	.chat-messages {
 		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		overflow: auto;
+		padding: 10px;
+
+		.message {
+			width: fit-content;
+			max-width: 40%;
+			overflow-wrap: break-word;
+
+			padding: 10px;
+			border-radius: 10px;
+		}
+		.send-message {
+			align-self: flex-end;
+			background: #006aff;
+			color: white;
+		}
+		.receive-message {
+			justify-content: flex-start;
+			background: white;
+			color: black;
+		}
 	}
 	.chat-input {
 		// height: 80px;
 		padding: 10px;
-		background: #146b97;
+		background: #006aff;
 		display: flex;
 		gap: 10px;
 		button {
@@ -105,7 +170,7 @@ const Container = styled.div`
 			flex-grow: 1;
 			display: flex;
 			align-items: center;
-			background: #dfecf5;
+			background: white;
 			padding: 5px 10px;
 			border-radius: 10px;
 			position: relative;
