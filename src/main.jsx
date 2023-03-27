@@ -5,8 +5,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
-import './index.css'
+import "./index.css";
 import SetAvatar from "./pages/SetAvatar";
+
 
 const router = createBrowserRouter([
 	{
@@ -23,14 +24,16 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/setAvatar",
-		element: <SetAvatar/>,
-	}
+		element: <SetAvatar />,
+	},
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<RouterProvider router={router}>
-			<App />
+		
+				<App />
+			
 		</RouterProvider>
 	</React.StrictMode>
 );

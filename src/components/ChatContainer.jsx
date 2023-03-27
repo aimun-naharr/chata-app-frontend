@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { BsFillEmojiLaughingFill, BsFillSendFill } from "react-icons/bs";
+import { BsFillEmojiLaughingFill, BsTelephoneFill , BsCameraVideoFill, BsThreeDotsVertical, BsFillSendFill} from "react-icons/bs";
 import { IconContext } from "react-icons";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
@@ -12,15 +12,12 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 	const [chatMessages, setChatMessages] = useState([]);
 	const [emojiPicker, setEmojiPicker] = useState(false);
 	const [receivedMsg, setReceivedMsg] = useState({});
-
 	useEffect(() => {
 		const getAllChatMsgs = async () => {
-			console.log(currentUser.user._id, currentChat._id);
 			const data = await axios.post(getAllMessage, {
 				from: currentUser.user._id,
 				to: currentChat._id,
 			});
-			console.log(data.data);
 			setChatMessages(data?.data);
 		};
 		getAllChatMsgs();
@@ -54,7 +51,8 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 	useEffect(() => {
 		if (socket) {
 			socket.on("rcv-msg", (msg) => {
-				setReceivedMsg({ fromSelf: msg, message: msg });
+				setReceivedMsg({ fromSelf: false, message: msg });
+				
 			});
 		}
 	});
@@ -65,15 +63,27 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 		<Container>
 			{/* chat header */}
 			<div className="chat-header">
+				<div className="chat-header-left-section">
 				<div className="avatar">
 					<img src={`data:image/svg+xml;base64,${currentChat?.avatar}`} alt="avatar" />
 				</div>
+				<div>
 				<h5>{currentChat.userName}</h5>
+				<p>{currentChat.email}</p>
+				</div>
+				</div>
+<div>
+	<div className="call-icons">
+	<BsTelephoneFill color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
+	<BsCameraVideoFill color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
+	<BsThreeDotsVertical color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
+	</div>
+</div>
 			</div>
 			{/* chat messages to display */}
 			<div className="chat-messages">
 				{chatMessages.map((message) => (
-					<div className={` message ${message.fromSelf ? "send-message" : "receive-message"}`}>{message.message}</div>
+					<div key={message._id} className={` message ${message.fromSelf ? "send-message" : "receive-message"}`}>{message.message}</div>
 				))}
 			</div>
 			{/* chat messages to send */}
@@ -97,7 +107,8 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 							<BsFillSendFill />
 						</div>
 					</IconContext.Provider> */}
-					{loading ? "Sending..." : "Send"}
+					{loading ? "Sending..." : <BsFillSendFill/>}
+					
 				</button>
 			</div>
 		</Container>
@@ -108,24 +119,44 @@ export default ChatContainer;
 
 const Container = styled.div`
 	height: 100vh;
-	background: #f0f9fd;
+	background: #f9feff;
 	display: flex;
 	flex-direction: column;
+	
 	.chat-header {
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
-		padding: 10px;
-		background: #006aff;
-		color: #ffffff;
-		margin-bottom: 20px;
-		h5 {
-			margin-left: 10px;
-		}
-		.avatar {
-			img {
-				height: 50px;
+		border-bottom: 2px solid var(--border-color);
+		padding: 5px 20px;
+		.call-icons{
+			display: flex;
+			gap: 20px;
+			align-items: center;
+			}
+		.chat-header-left-section{
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin-bottom: 20px;
+			div{
+				p{
+					font-size: 14px;
+					color: gray;
+				}
+				h5 {
+					color: var(--text-color);
+					font-size: 16px;
+					font-weight: unset;
+				}
+			}
+			.avatar {
+				img {
+					height: 50px;
+				}
 			}
 		}
+		
 	}
 	.chat-messages {
 		flex-grow: 1;
@@ -155,22 +186,26 @@ const Container = styled.div`
 		}
 	}
 	.chat-input {
-		// height: 80px;
 		padding: 10px;
-		background: #006aff;
+		border-top: 2px solid var(--border-color);
 		display: flex;
+		background: white;
 		gap: 10px;
 		button {
 			width: 80px;
 			border-radius: 10px;
 			border: none;
 			cursor: pointer;
+			background: transparent;
+			color: var(--heading-color);
+			font-size: 20px;
 		}
 		.chat-input-left-section {
 			flex-grow: 1;
 			display: flex;
 			align-items: center;
 			background: white;
+			border-right: 1px solid var(--border-color);
 			padding: 5px 10px;
 			border-radius: 10px;
 			position: relative;
@@ -193,3 +228,17 @@ const Container = styled.div`
 		}
 	}
 `;
+
+// To firstly identify that a message was seen, IntersectionObserver is an inbuilt API that detects when an element has entered the viewport, meaning that it is visible, therefore; obviously seen. I have added comments in the code below where you should add a function to call to the server that the message was seen, however, that's up to you to implement.
+
+// const observer = new window.IntersectionObserver(([entry]) => {
+//   if (entry.isIntersecting) {
+//     // Send a message to the server that the user has viewed the message.
+//     // Eg. socket.emit('read-message', message.id)
+//     return
+//   }
+// }, {
+//   root: null,
+//   threshold: 0.1,
+// })
+// observer.observe(document.getElementById(message.id));

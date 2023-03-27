@@ -39,7 +39,7 @@ const SetAvatar = () => {
 			image: avatars[selectedAvatar],
 		});
 		setIsLoading(false)
-		console.log(data);
+		
 		if (data.isSet) {
 			user.user.isAvatarImageSet = true;
 			user.user.avatarImage = data.image;

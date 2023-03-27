@@ -1,9 +1,12 @@
+import { CounterProvider } from "./state"
 
 function App() {
   return (
-    <div className="App">
+    <CounterProvider>
+      <div className="App">
     
     </div>
+    </CounterProvider>
   )
 }
 

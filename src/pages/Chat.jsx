@@ -15,7 +15,7 @@ const Chat = () => {
 	const [currentUser, setCurrentUser] = useState({});
 	const [currentChat, setCurrentChat] = useState(null);
 	const socket = io("http://localhost:8000");
-	console.log(socket)
+	
 	useEffect(() => {
 		if (!localStorage.getItem("chat-app-user")) {
 			navigate("/login");
@@ -63,6 +63,8 @@ const Container = styled.div`
 	height: 100vh;
 	weight: 100vw;
 	justify-content: center;
+	background: #f9feff;
+	
 	.container {
 		display: grid;
 		grid-template-columns: 25% 75%;
