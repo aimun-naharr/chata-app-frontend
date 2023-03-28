@@ -14,5 +14,6 @@ body{
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: var(--bg-color);
+  /* background: var(--bg-color); */
+  padding: 10px 0;
 }

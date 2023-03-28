@@ -95,10 +95,10 @@ const FormContainer = styled.div`
         padding: 10px; 
         outline: none;
         border: none;
-        border-bottom:2px solid lightgray;
+        border: 1px solid var(--bg-color);
         border-radius: 10px;
         &:focus{
-            border-bottom:2px solid gray;
+            border-left:6px solid var(--heading-color);
         }
         .error{
             color: white;

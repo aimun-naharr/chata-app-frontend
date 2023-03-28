@@ -92,11 +92,11 @@ const FormContainer = styled.div`
 	input{
         padding: 10px; 
         outline: none;
-        border: none;
-        border-bottom:2px solid lightgray;
+        border: 1px solid var(--bg-color);
+        border-left:6px solid transparent;
         border-radius: 10px;
         &:focus{
-            border-bottom:2px solid gray;
+            border-left:6px solid var(--heading-color);
         }
         .error{
             color: white;
@@ -117,7 +117,7 @@ const FormContainer = styled.div`
         font-size: 12px;
     }
     a{
-        color: #00B2FF;
+        color: var(--heading-color);
     }
 	}
 `;

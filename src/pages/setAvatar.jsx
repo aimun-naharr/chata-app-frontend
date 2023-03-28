@@ -10,6 +10,9 @@ const SetAvatar = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedAvatar, setSelectedAvatar] = useState(0);
 	const [avatars, setAvatars] = useState([]);
+	const user =  JSON.parse(localStorage.getItem("chat-app-user"));
+	const [editUser, setEditUser]=useState({})
+	console.log(editUser)
 	const navigate = useNavigate();
 	const api = "https://api.multiavatar.com//45678945";
 	useEffect(() => {
@@ -33,19 +36,22 @@ const SetAvatar = () => {
 	}, []);
 
 	const setProfilePicture = async () => {
-		const user = await JSON.parse(localStorage.getItem("chat-app-user"));
 		setIsLoading(true)
 		const { data } = await axios.patch(`${setAvatarUrl}/${user.user._id}`, {
 			image: avatars[selectedAvatar],
 		});
 		setIsLoading(false)
-		
+		console.log(data)
 		if (data.isSet) {
+	
+			console.log('inside from data.isSet')
 			user.user.isAvatarImageSet = true;
-			user.user.avatarImage = data.image;
+			user.user.avatar = data.image;
 			navigate("/chat");
+			
 		}
 	};
+	
 	if (isLoading) return <LoadingComponent />;
 	return (
 		<Container>

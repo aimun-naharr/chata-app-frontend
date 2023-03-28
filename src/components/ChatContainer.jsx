@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { BsFillEmojiLaughingFill, BsTelephoneFill , BsCameraVideoFill, BsThreeDotsVertical, BsFillSendFill} from "react-icons/bs";
+import { BsFillEmojiLaughingFill, BsTelephoneFill, BsCameraVideoFill, BsThreeDotsVertical, BsFillSendFill } from "react-icons/bs";
+import { IoMdSend } from "react-icons/io";
 import { IconContext } from "react-icons";
 import EmojiPicker from "emoji-picker-react";
 import axios from "axios";
 import { getAllMessage, sendMessage } from "../utils/ApiRoutes";
+import { ColorRing } from "react-loader-spinner";
 
 const ChatContainer = ({ currentChat, currentUser, socket }) => {
 	const [msg, setMsg] = useState("");
@@ -27,7 +29,8 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 		message += event.emoji;
 		setMsg(message);
 	};
-	const handleSendMsg = async () => {
+	const handleSendMsg = async (e) => {
+		e.preventDefault()
 		if (!msg) return;
 		setLoading(true);
 		const data = await axios.post(sendMessage, {
@@ -52,7 +55,6 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 		if (socket) {
 			socket.on("rcv-msg", (msg) => {
 				setReceivedMsg({ fromSelf: false, message: msg });
-				
 			});
 		}
 	});
@@ -64,26 +66,28 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 			{/* chat header */}
 			<div className="chat-header">
 				<div className="chat-header-left-section">
-				<div className="avatar">
-					<img src={`data:image/svg+xml;base64,${currentChat?.avatar}`} alt="avatar" />
+					<div className="avatar">
+						<img src={`data:image/svg+xml;base64,${currentChat?.avatar}`} alt="avatar" />
+					</div>
+					<div>
+						<h5>{currentChat.userName}</h5>
+						<p>{currentChat.email}</p>
+					</div>
 				</div>
 				<div>
-				<h5>{currentChat.userName}</h5>
-				<p>{currentChat.email}</p>
+					<div className="call-icons">
+						<BsTelephoneFill color="#333" style={{ cursor: "pointer", fontSize: "20px" }} />
+						<BsCameraVideoFill color="#333" style={{ cursor: "pointer", fontSize: "20px" }} />
+						<BsThreeDotsVertical color="#333" style={{ cursor: "pointer", fontSize: "20px" }} />
+					</div>
 				</div>
-				</div>
-<div>
-	<div className="call-icons">
-	<BsTelephoneFill color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
-	<BsCameraVideoFill color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
-	<BsThreeDotsVertical color="#333" style={{cursor: 'pointer', fontSize: '20px'}}/>
-	</div>
-</div>
 			</div>
 			{/* chat messages to display */}
 			<div className="chat-messages">
 				{chatMessages.map((message) => (
-					<div key={message._id} className={` message ${message.fromSelf ? "send-message" : "receive-message"}`}>{message.message}</div>
+					<div key={message._id} className={` message ${message.fromSelf ? "send-message" : "receive-message"}`}>
+						{message.message}
+					</div>
 				))}
 			</div>
 			{/* chat messages to send */}
@@ -99,7 +103,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 							<BsFillEmojiLaughingFill />
 						</div>
 					</IconContext.Provider>
-					<input type="text" value={msg} placeholder="Write a message..." onChange={(e) => setMsg(e.target.value)} />
+					<form onSubmit={handleSendMsg}><input type="text" value={msg} placeholder="Write a message..." onChange={(e) => setMsg(e.target.value)} /></form>
 				</div>
 				<button onClick={handleSendMsg}>
 					{/* <IconContext.Provider value={{ color: "#146b97", className: "icon-button", size: 30 }}>
@@ -107,8 +111,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 							<BsFillSendFill />
 						</div>
 					</IconContext.Provider> */}
-					{loading ? "Sending..." : <BsFillSendFill/>}
-					
+					{loading ? <ColorRing visible={true} height="30" width="30" ariaLabel="blocks-loading" wrapperStyle={{}} wrapperClass="blocks-wrapper" /> : <IoMdSend />}
 				</button>
 			</div>
 		</Container>
@@ -122,25 +125,25 @@ const Container = styled.div`
 	background: #f9feff;
 	display: flex;
 	flex-direction: column;
-	
+
 	.chat-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		border-bottom: 2px solid var(--border-color);
 		padding: 5px 20px;
-		.call-icons{
+		.call-icons {
 			display: flex;
 			gap: 20px;
 			align-items: center;
-			}
-		.chat-header-left-section{
+		}
+		.chat-header-left-section {
 			display: flex;
 			align-items: center;
 			gap: 10px;
 			margin-bottom: 20px;
-			div{
-				p{
+			div {
+				p {
 					font-size: 14px;
 					color: gray;
 				}
@@ -156,7 +159,6 @@ const Container = styled.div`
 				}
 			}
 		}
-		
 	}
 	.chat-messages {
 		flex-grow: 1;

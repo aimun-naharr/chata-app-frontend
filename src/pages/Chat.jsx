@@ -11,6 +11,7 @@ import io from "socket.io-client";
 const Chat = () => {
 	const navigate = useNavigate();
 	const user = JSON.parse(localStorage.getItem("chat-app-user"));
+	console.log(user)
 	const [contacts, setContacts] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
 	const [currentChat, setCurrentChat] = useState(null);
@@ -30,8 +31,8 @@ if(user){
 	}, [user])
 	useEffect(() => {
 		const fetchAllUsers = async () => {
-			if (currentUser && currentUser?.user?.isAvatarImageSet) {
-				const data = await axios.get(`${getAllUsersUrl}/${currentUser.user._id}`);
+			if (currentUser ) {
+				const data = await axios.get(`${getAllUsersUrl}/${user.user._id}`);
 				setContacts(data?.data);
 			}
 		};

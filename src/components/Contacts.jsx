@@ -2,42 +2,54 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { FiLogOut } from "react-icons/fi";
 import { BiSearchAlt } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 
 
 const Contacts = ({ currentUser, contacts, changeChat }) => {
 	const [selectedContact, setSelectedContact] = useState({});
+	const [searchInput ,setSearchInput]=useState('')
+	const navigate=useNavigate()
 	const handleChangeChat = (i, contact) => {
 		setSelectedContact(i);
 		changeChat(contact);
 	};
+	const handleLogOut=()=>{
+		localStorage.clear()
+		navigate('/login')
+	}
 	return (
 		<Container>
 			<div className="wrapper">
 				{/* profile container */}
 				<div className="profile-container">
 					<div className="profile-container-image">
-						<img src={`data:image/svg+xml;base64,${currentUser?.user.avatar}`} alt="avatar" />
+						<img src={`data:image/svg+xml;base64,${currentUser?.user.avatar || currentUser?.avatar}`} alt="avatar" />
 						<div>
 							<h3>{currentUser?.user.userName}</h3>
 							<p>{currentUser?.user.email}</p>
 						</div>
 					</div>
-					<FiLogOut size={25} color={"#0B61EE"} style={{ cursor: "pointer" }} />
+					<FiLogOut onClick={handleLogOut} size={25} color={"#0B61EE"} style={{ cursor: "pointer" }} />
 				</div>
 				<div className="search-container">
 					<div>
 						<BiSearchAlt color="#084BB8" />
-						<input placeholder="Search by name" />
+						<input placeholder="Search by name" onChange={(e)=>setSearchInput(e.target.value)}/>
 					</div>
 				</div>
 				{/* contacts */}
 				<div className="contacts">
-					{contacts?.map((contact, i) => (
+					{contacts?.filter(contact=>{
+						if(searchInput){
+							return contact.userName.toLowerCase().includes(searchInput.toLowerCase())
+						}
+						return contact
+					}).map((contact, i) => (
 						<div key={contact._id} className={`contact-container ${selectedContact === i ? "selected" : ""}`} onClick={() => handleChangeChat(i, contact)}>
 							<img src={`data:image/svg+xml;base64,${contact.avatar}`} alt={contact.userName} />
 							<div>
 							<h5>{contact.userName}</h5>
-							<p>Lorem ipsum dolor sit amet consectetur adip</p>
+							{/* <p>Lorem ipsum dolor sit amet consectetur adip</p> */}
 							</div>
 						</div>
 					))}
@@ -58,7 +70,7 @@ const Container = styled.div`
 		flex-direction: column;
 		align-items: justify-between;
 		height: 100vh;
-		padding: 10px 20px;
+		padding: 10px 10px;
 		.logo {
 			display: flex;
 			padding: 10px;
@@ -79,14 +91,16 @@ const Container = styled.div`
 			// background-color: #C9E8F8;
 			display: flex;
 			flex-direction: column;
+			margin-bottom: 20px;
 			gap: 10px;
 			// padding:  10px;
 			.contact-container {
 				transition: 0.5s ease-out;
+				border-left: 6px solid transparent;
 				display: flex;
 				align-items: center;
 				gap: 10px;
-				// background: #ABD7ED;
+				
 				padding: 10px;
 				border-radius: 5px;
 				cursor: pointer;
@@ -96,7 +110,7 @@ const Container = styled.div`
 				div{
 					h5 {
 						text-transform: uppercase;
-						color: var(--heading-color)
+						color: var(--text-color)
 					}
 					p{
 						font-size: 12px;
@@ -105,7 +119,8 @@ const Container = styled.div`
 				}
 			}
 			.selected {
-				background-color: whitesmoke;
+				border-left: 6px solid var(--heading-color);
+				background: var(--bg-color)
 			}
 		}
 		.search-container {
