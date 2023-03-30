@@ -29,6 +29,7 @@ useEffect(()=>{
         axios.post(loginUrl, { userName, password })
         .then(response => {
            if(response.data){
+            console.log(response.data)
             localStorage.setItem('chat-app-user', JSON.stringify(response.data))
            
             navigate('/chat')

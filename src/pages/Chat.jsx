@@ -5,7 +5,7 @@ import styled from "styled-components";
 import ChatContainer from "../components/ChatContainer";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome";
-import { getAllUsersUrl } from "../utils/ApiRoutes";
+import { baseUrl, getAllUsersUrl } from "../utils/ApiRoutes";
 import io from "socket.io-client";
 
 const Chat = () => {
@@ -15,7 +15,7 @@ const Chat = () => {
 	const [contacts, setContacts] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
 	const [currentChat, setCurrentChat] = useState(null);
-	const socket = io("http://localhost:8000");
+	const socket = io(baseUrl);
 	
 	useEffect(() => {
 		if (!localStorage.getItem("chat-app-user")) {
