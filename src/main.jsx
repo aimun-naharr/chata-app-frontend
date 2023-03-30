@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Chat from "./pages/Chat";
 import "./index.css";
-import SetAvatar from './pages/SetAvatar'
+import SetAvatar from "./pages/SetAvatar";
 
 
 
